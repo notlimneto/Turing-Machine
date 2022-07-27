@@ -2,33 +2,43 @@ class Transicao:
 	def __init__(self, valor_leitura, estado_destino, valor_escrita, movimento):
 		self.valor_leitura, self.estado_destino, self.valor_escrita, self.movimento = valor_leitura, estado_destino, valor_escrita, movimento
 
-	def transita(fita, cabeca_leitura):
+	def transita(self, fita, cabeca_leitura):
 		if cabeca_leitura==len(fita)-1 and self.valor_escrita!="B":
 			fita+="B"
 
-		if self.movimento=="L": cabeca_leitura-=1
-		else: cabeca_leitura+=1
+		temp = list(fita)
+		temp[cabeca_leitura] = self.valor_escrita
+		fita = "".join(temp)
 
-		return [fita, cabeca_leitura]
+		if self.movimento=="L": cabeca_leitura-=1
+		elif self.movimento=="R": cabeca_leitura+=1
+
+		return [fita, self.estado_destino, cabeca_leitura]
 
 class Estado:
 	def __init__(self, valor_estado):
-		self.valor_estado, self.transicoes = valor_estado, [] #Lembre-se de transformar em um dicionário para mais fácil acesso a qual letra de leitura
+		self.valor_estado, self.transicoes = valor_estado, {}
 
 	def adicionarTransicao(self, transicao):
-		self.transicoes.append(transicao)
+		self.transicoes[transicao.valor_leitura] = transicao
 
 	def listarTransicoes(self):
 		iterador = self.transicoes
 		for x in iterador:
-			print("({}, {}) -> ({}, {}, {})\n".format(self.valor_estado, x.valor_leitura, x.estado_destino, x.valor_escrita, x.movimento))
+			print("({}, {}) -> ({}, {}, {})\n".format(self.valor_estado, 
+				iterador[x].valor_leitura, 
+				iterador[x].estado_destino, 
+				iterador[x].valor_escrita, 
+				iterador[x].movimento
+			))
 
-		print("\n")
+
+	def getTransicao(self, valor_leitura):
+		return self.transicoes[valor_leitura]
 
 
 def maquinaTuringUniversal():
 	maquina = str(input("Insira a máquina: \n")).replace("000", "")
-	#fita = str(input("Insira a fita: \n"))
 
 	transicoes = maquina.split("00")
 	
@@ -44,10 +54,9 @@ def maquinaTuringUniversal():
 	}
 
 	estados = {}
-	transicoes_tratadas = []
-
 
 	############## Gerando as transições para a máquina #################
+	
 	for transicao in transicoes:
 
 		valores_transicao = transicao.split("0")
@@ -63,9 +72,29 @@ def maquinaTuringUniversal():
 			movimentos[valores_transicao[4]]
 		))
 
+	#Isso daqui mostrava os estados computados
 
-	for x in estados:
-		estados[x].listarTransicoes()
+	# for x in estados:
+	# 	estados[x].listarTransicoes()
 
+	fita = str(input("Insira a fita: \n"))
+
+	estado_atual = estados["1"]
+	existe_transicao = True
+	cabeca_leitura = 0
+
+	################### Computar a fita segundo a máquina ####################
+
+	while existe_transicao:
+		try:
+			valores_transicao = estado_atual.getTransicao(fita[cabeca_leitura]).transita(fita, cabeca_leitura)
+			fita = valores_transicao[0]
+			estado_atual = estados[valores_transicao[1]]
+			cabeca_leitura = valores_transicao[2]
+		except:
+			existe_transicao=False
+		#print("    {}".format(fita)) #Isso daqui era pra mostrar as computações
+
+	print("\nFita resultante: {}".format(fita))
 
 maquinaTuringUniversal()
