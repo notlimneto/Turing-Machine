@@ -31,12 +31,9 @@ Non-binary from the example above:
 (q1, B)→(q2, 1, R)  
 (q1, 1)→(q1, 1, R)  
 (q2, B)→(q3 , B, L)  
-(q2, 1)→(q2, 1, R)
-
-(q3, 1) →(q4 , B, L)
-
-(q4,1)→(q5, B, L)
-
+(q2, 1)→(q2, 1, R)  
+(q3, 1) →(q4 , B, L)  
+(q4,1)→(q5, B, L)  
 (q5, 1)→(q5, 1, L)
 
 
